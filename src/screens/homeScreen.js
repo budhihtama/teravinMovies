@@ -28,16 +28,8 @@ export default function Home() {
    return await AsyncStorage.getItem('MOVIE_LOCAL')
   }
 
-  useEffect(() => {
-   saveLocal(populer)
-   if(temp == null){
-    const res = getLocal()
-   setTemp(JSON.parse(res))  
-   }
-   
-  },[temp])
 
-  console.log(temp)
+ 
   return (
     <View>
       <Text style={styles.headerTxt}>Popular</Text>
