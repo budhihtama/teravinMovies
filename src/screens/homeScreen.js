@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: wp(5),
-    marginBottom: hp(20),
+    marginBottom: hp(10),
   },
   title: {
     fontSize: hp(3),
