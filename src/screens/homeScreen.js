@@ -9,33 +9,96 @@ import {
 } from 'react-native';
 import {wp, hp} from '../components/settingScreen';
 import axios from 'axios';
+import {useSelector} from  'react-redux'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home() {
-  const [data, setData] = useState();
-  const url =
-    'https://api.themoviedb.org/3/discover/movie?api_key=f7b67d9afdb3c971d4419fa4cb667fbf';
+  
+  const dataMovie = useSelector((state) => state.connection.data)
+  const populer = dataMovie.slice(0,10)
+  const [data, setData] = useState(populer);
   const poster = 'https://image.tmdb.org/t/p/w500';
-  function getData() {
-    axios
-      .get(url)
-      .then((res) => {
-        setData(res.data.results.slice(0, 10));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const [temp, setTemp] = useState()
+  
+  async function saveLocal(populer){
+    AsyncStorage.setItem('MOVIE_LOCAL', JSON.stringify(populer))
+  }
+
+  async function getLocal(){
+   return await AsyncStorage.getItem('MOVIE_LOCAL')
   }
 
   useEffect(() => {
-    getData();
-  }, [url]);
+   saveLocal(populer)
+   if(temp == null){
+    const res = getLocal()
+   setTemp(JSON.parse(res))  
+   }
+   
+  },[temp])
+
+  console.log(temp)
   return (
     <View>
       <Text style={styles.headerTxt}>Popular</Text>
       <ScrollView style={styles.container}>
-        {data
+        {data != null
           ? data.map((item, index) => (
-              <TouchableOpacity key={index} style={styles.content}>
+              <Render item={item} data={index}/>
+            ))
+          : null}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  headerTxt: {
+    fontFamily: 'NunitoSans-Bold',
+    fontSize: hp(4),
+    padding: wp(4),
+  },
+  container: {
+    padding: wp(5),
+    marginBottom: hp(20),
+  },
+  title: {
+    fontSize: hp(3),
+    fontFamily: 'NunitoSans-Bold',
+  },
+  content: {
+    flexDirection: 'row',
+    marginVertical: hp(2),
+    height: hp(30),
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'gray',
+  },
+  contentText: {
+    paddingHorizontal: wp(3),
+    flex: 1,
+  },
+  img: {
+    width: wp(30),
+    height: hp(25),
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+  },
+  date: {
+    fontFamily: 'NunitoSans-SemiBold',
+    fontSize: hp(2.5),
+  },
+  imgModal: {
+    width: wp(60),
+    height: hp(70),
+  },
+});
+
+
+const Render = ({item, data}) => {
+  const poster = 'https://image.tmdb.org/t/p/w500';
+  return (
+    <TouchableOpacity style={styles.content} key={data}>
                 <Image
                   style={styles.img}
                   source={{uri: poster + item.poster_path}}
@@ -48,46 +111,9 @@ export default function Home() {
                   <Text style={styles.date}>
                     Vote Average: {item.vote_average}
                   </Text>
-                  <Text style={styles.date}>
-                    Vote Count: {item.vote_count}
-                  </Text>
-                  <Text style={styles.date}>
-                    {item.original_language}
-                  </Text>
+                  <Text style={styles.date}>Vote Count: {item.vote_count}</Text>
+                  <Text style={styles.date}>{item.original_language}</Text>
                 </View>
               </TouchableOpacity>
-            ))
-          : null}
-      </ScrollView>
-    </View>
-  );
+  )
 }
-
-const styles = StyleSheet.create({
-  headerTxt: {
-    fontSize: hp(4),
-    fontWeight: 'bold',
-    padding: wp(4),
-  },
-  container: {
-    padding: wp(5),
-    marginBottom: hp(20),
-  },
-  title: {
-    fontSize: hp(3.5),
-    fontWeight: 'bold',
-  },
-  content: {
-    flexDirection: 'row',
-    marginVertical: hp(2),
-    height: hp(30)
-  },
-  contentText: {
-      paddingHorizontal: wp(3)
-  },
-  img: {
-    width: wp(30),
-    height: hp(25),
-    borderRadius: 10,
-  },
-});

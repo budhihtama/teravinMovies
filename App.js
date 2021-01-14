@@ -1,20 +1,23 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-import HomeScreen from './src/screens/homeScreen'
+import React, {useEffect} from 'react';
+import 'react-native-gesture-handler';
+import SplashScreen from 'react-native-splash-screen'
+// Navigation
+import { NavigationContainer } from '@react-navigation/native';
+import AppStack from './src/navigator/appStack';
+// redux
+import {Provider} from 'react-redux';
+import store from './src/redux/store';
 
-const App: () => React$Node = () => {
+const App = () => {
+  
+  useEffect(() => {
+        SplashScreen.hide()
+     
+      },)
   return (
-    <View>
-      <StatusBar barStyle="dark-content" />
-     <HomeScreen />
-    </View>
+      <Provider store={store}>
+          <AppStack />
+      </Provider>
   );
 };
 export default App;
